@@ -38,6 +38,7 @@ sftp-config.json
 
 # Node.js
 /npm-debug.log
-/node_modules/
+/node_modules
+/dist
 /yarn.lock
 

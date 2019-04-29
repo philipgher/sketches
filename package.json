@@ -1,7 +1,7 @@
 {
   "name": "my_react_boilerplate",
   "version": "1.0.0",
-  "description": "Philip's boilerplate - React, Express, Webpack, Babel",
+  "description": "Philip's minimal boilerplate - React, Express, Webpack, Babel",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
