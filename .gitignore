@@ -1,0 +1,43 @@
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+._*
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Windows
+web.config
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+
+# =========================
+# IDE Project Files
+# =========================
+
+# PhpStorm
+.idea
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+sftp-config.json
+
+# VS Code
+.vscode
+
+# Node.js
+/npm-debug.log
+/node_modules/
+/yarn.lock
+
