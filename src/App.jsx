@@ -7,7 +7,7 @@ const simplex = new SimplexNoise();
 
 const App = () => {
   const timer = useRef(0);
-  const [elementsAmt] = useState(60);
+  const [elementsAmt] = useState(50);
   const [widthVal, setWidthVal] = useState([]);
   const [heightVal, setHeightVal] = useState([]);
   const [middleVal, setMiddleVal] = useState([]);
@@ -25,7 +25,7 @@ const App = () => {
     for (let i = 0; i < elementsAmt; i += 1) {
       tempHeightArray.push((simplex.noise2D(timer.current + i / 100, timer.current) + 1) * 500);
       tempWidthArray.push((simplex.noise2D(timer.current - i / 10, timer.current)) * 100);
-      // tempMiddleArray.push((simplex.noise2D(timer.current - i, timer.current) + 1) + 1000);
+      tempMiddleArray.push((simplex.noise2D(timer.current - i, timer.current) + 1) * 500 + 100);
     }
     setHeightVal(tempHeightArray);
     setWidthVal(tempWidthArray);
@@ -50,19 +50,22 @@ const App = () => {
         width="3000"
       >
         {[...Array(elementsAmt)].map((_, index) => (
-          <path
-            key={index}
-            id="lineBC"
-            d={`
-              M 0 ${index * 20 + 100}
-              q ${heightVal[index]} ${widthVal[index]} ${1000} 0
+          <>
+            <path
+              key={index}
+              id="lineBC"
+              d={`
+              M 0 ${index * 5 + 500}
+              q ${heightVal[index] * 1.1} ${widthVal[index] * 1.1} ${middleVal[index] * 1.1} ${index > elementsAmt / 2 ? index * 20 : -index * 30}
               // q ${heightVal[index]} ${widthVal[index]} ${middleVal[index]} 0
-              // t ${2000 - middleVal[index]} 0
+              // t ${middleVal[index]} 0
             `}
-            stroke="white"
-            strokeWidth="2"
-            fill="none"
-          />
+              // stroke={`hsl(${index * (250 / elementsAmt)}, 100%, 50%)`}
+              stroke="white"
+              strokeWidth="2"
+              fill="none"
+            />
+          </>
         ))}
       </svg>
     </>
