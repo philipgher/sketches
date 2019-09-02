@@ -1,5 +1,5 @@
 {
-  "name": "my_react_boilerplate",
+  "name": "sketches",
   "version": "1.0.0",
   "description": "Philip's minimal boilerplate - React, Express, Webpack, Babel",
   "main": "index.jsx",
@@ -14,7 +14,8 @@
   "dependencies": {
     "express": "^4.16.4",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "simplex-noise": "^2.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
