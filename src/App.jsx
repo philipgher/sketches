@@ -12,6 +12,15 @@ const App = () => {
   const [heightVal, setHeightVal] = useState([]);
   const [middleVal, setMiddleVal] = useState([]);
 
+  const personPresent = useRef(false);
+  const spreadAmt = useRef(0);
+
+  const handleKeyDown = (e) => {
+    if (e.code === 'KeyS') {
+      personPresent.current = !personPresent.current;
+    }
+  };
+
   const handleTick = () => {
     timer.current += 0.001;
 
@@ -20,21 +29,31 @@ const App = () => {
 
     const tempHeightArray = [];
     const tempWidthArray = [];
-    const tempMiddleArray = [];
+    // const tempMiddleArray = [];
 
     for (let i = 0; i < elementsAmt; i += 1) {
       tempHeightArray.push((simplex.noise2D(timer.current + i / 100, timer.current) + 1) * 500);
       tempWidthArray.push((simplex.noise2D(timer.current - i / 10, timer.current)) * 100);
-      tempMiddleArray.push((simplex.noise2D(timer.current - i, timer.current) + 1) * 500 + 100);
+      // tempMiddleArray.push((simplex.noise2D(timer.current - i, timer.current) + 1) * 500 + 100);
     }
     setHeightVal(tempHeightArray);
     setWidthVal(tempWidthArray);
-    setMiddleVal(tempMiddleArray);
+    // setMiddleVal(tempMiddleArray);
+
+    if (personPresent.current && spreadAmt.current < 20) {
+      spreadAmt.current += 0.5;
+    } else if (!personPresent.current && spreadAmt.current > 0) {
+      spreadAmt.current -= 0.5;
+    }
 
     requestAnimationFrame(handleTick);
   };
 
   useEffect(() => {
+    window.addEventListener('keyup', (e) => {
+      handleKeyDown(e);
+    });
+
     requestAnimationFrame(handleTick);
   }, []);
 
@@ -55,10 +74,9 @@ const App = () => {
               key={index}
               id="lineBC"
               d={`
-              M 0 ${index * 5 + 500}
-              q ${heightVal[index] * 1.1} ${widthVal[index] * 1.1} ${middleVal[index] * 1.1} ${index > elementsAmt / 2 ? index * 20 : -index * 30}
-              // q ${heightVal[index]} ${widthVal[index]} ${middleVal[index]} 0
-              // t ${middleVal[index]} 0
+              M 0 ${index * 5 + 600}
+              q ${heightVal[index]} ${index > elementsAmt / 2 ? index * spreadAmt.current : (index - elementsAmt) * spreadAmt.current} ${1500} ${widthVal[index]}
+              // q ${heightVal[index]} ${widthVal[index]} ${1000} ${index > elementsAmt / 2 ? index * spreadAmt.current : (index - elementsAmt) * spreadAmt.current}
             `}
               // stroke={`hsl(${index * (250 / elementsAmt)}, 100%, 50%)`}
               stroke="white"
