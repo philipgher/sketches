@@ -1,91 +1,115 @@
 import React, { useEffect, useState, useRef } from 'react';
+
 import SimplexNoise from 'simplex-noise';
+import FreakyDots from './FreakyDots';
+import TrianglePattern from './TrianglePatterns';
 
 const simplex = new SimplexNoise();
 
 // max callstack = 4172
 
-const App = () => {
-  const timer = useRef(0);
-  const [elementsAmt] = useState(50);
-  const [widthVal, setWidthVal] = useState([]);
-  const [heightVal, setHeightVal] = useState([]);
-  const [middleVal, setMiddleVal] = useState([]);
+// C x1 y1, x2 y2, x y    c dx1 dy1, dx2 dy2, dx dy
+// S x2 y2, x y           s dx2 dy2, dx dy
+// Q x1 y1, x y           q dx1 dy1, dx dy
+// T x y                  t dx dy
 
-  const personPresent = useRef(false);
+const App = () => {
+  const [timer, setTimer] = useState(0);
+  const timerOffsetHori = useRef(0);
+  const [elementsAmt] = useState(10);
+
+  const currentAnimationIndex = useRef(2);
+
+  const [widthVal, setWidthVal] = useState([250, 250, 250, 250, 250, 250, 250, 250]);
+  const [heightVal, setHeightVal] = useState(250);
+
+  const [widthValHori, setWidthValHori] = useState(0);
+  const [heightValHori, setHeightValHori] = useState(250);
+
+  const openDiaframga = useRef([false, false, false, false]);
   const spreadAmt = useRef(0);
+  const offsetHoriLines = useRef(false);
 
   const handleKeyDown = (e) => {
-    if (e.code === 'KeyS') {
-      personPresent.current = !personPresent.current;
+    if (e.code === 'Digit1') {
+      openDiaframga.current[0] = !openDiaframga.current[0];
+    } else if (e.code === 'Digit2') {
+      openDiaframga.current[1] = !openDiaframga.current[1];
+    } else if (e.code === 'Digit3') {
+      openDiaframga.current[2] = !openDiaframga.current[2];
+    } else if (e.code === 'Digit4') {
+      openDiaframga.current[3] = !openDiaframga.current[3];
+    } else if (e.code === 'KeyQ') {
+      offsetHoriLines.current = !offsetHoriLines.current;
     }
   };
+
 
   const handleTick = () => {
-    timer.current += 0.001;
+    switch (currentAnimationIndex.current) {
+      // Pulse all
+      case 0:
+        setWidthVal([...Array(8)].map((_, index) => {
+          if (index % 2) {
+            return ((Math.sin(timer) + 1) * 125);
+          }
+          return -((Math.sin(timer) + 1) * 125);
+        }));
+        // setHeightVal((Math.sin(timer) + 1) * 250);
 
-    // setWidthVal((Math.cos(timer.current) + 1) * 200);
-    // setHeightVal((Math.sin(timer.current) + 1) * 200);
+        // setHeightValHori((Math.sin(timer) + 1) * 250);
+        // setWidthValHori(simplex.noise2D(timer, timer) * 300);
 
-    const tempHeightArray = [];
-    const tempWidthArray = [];
-    // const tempMiddleArray = [];
+        if (offsetHoriLines.current) {
+          timerOffsetHori.current += 0.01;
 
-    for (let i = 0; i < elementsAmt; i += 1) {
-      tempHeightArray.push((simplex.noise2D(timer.current + i / 100, timer.current) + 1) * 500);
-      tempWidthArray.push((simplex.noise2D(timer.current - i / 10, timer.current)) * 100);
-      // tempMiddleArray.push((simplex.noise2D(timer.current - i, timer.current) + 1) * 500 + 100);
+          setWidthValHori((Math.sin(timerOffsetHori.current)) * 100);
+        }
+        break;
+
+      // Sweep left
+      case 1:
+        setWidthVal([...Array(8)].map((_, index) => {
+          console.log();
+          return -((Math.sin(timer)) * 250);
+        }));
+        break;
+
+      // Freaky dots rotate x y
+      case 2:
+        break;
+
+      default:
+        break;
     }
-    setHeightVal(tempHeightArray);
-    setWidthVal(tempWidthArray);
-    // setMiddleVal(tempMiddleArray);
 
-    if (personPresent.current && spreadAmt.current < 20) {
-      spreadAmt.current += 0.5;
-    } else if (!personPresent.current && spreadAmt.current > 0) {
-      spreadAmt.current -= 0.5;
-    }
+    // if (personPresent.current && spreadAmt.current < 10) {
+    //   spreadAmt.current += 0.5;
+    // } else if (!personPresent.current && spreadAmt.current > 0) {
+    //   spreadAmt.current -= 0.5;
+    // }
 
-    requestAnimationFrame(handleTick);
+    // requestAnimationFrame(handleTick);
   };
+
+  useEffect(() => {
+    requestAnimationFrame(handleTick);
+    setTimer(timer + 0.01);
+  }, [timer]);
 
   useEffect(() => {
     window.addEventListener('keyup', (e) => {
       handleKeyDown(e);
     });
-
-    requestAnimationFrame(handleTick);
   }, []);
-
-  // C x1 y1, x2 y2, x y    c dx1 dy1, dx2 dy2, dx dy
-  // S x2 y2, x y           s dx2 dy2, dx dy
-  // Q x1 y1, x y           q dx1 dy1, dx dy
-  // T x y                  t dx dy
 
   return (
     <>
-      <svg
-        height="2000"
-        width="3000"
-      >
-        {[...Array(elementsAmt)].map((_, index) => (
-          <>
-            <path
-              key={index}
-              id="lineBC"
-              d={`
-              M 0 ${index * 5 + 600}
-              q ${heightVal[index]} ${index > elementsAmt / 2 ? index * spreadAmt.current : (index - elementsAmt) * spreadAmt.current} ${1500} ${widthVal[index]}
-              // q ${heightVal[index]} ${widthVal[index]} ${1000} ${index > elementsAmt / 2 ? index * spreadAmt.current : (index - elementsAmt) * spreadAmt.current}
-            `}
-              // stroke={`hsl(${index * (250 / elementsAmt)}, 100%, 50%)`}
-              stroke="white"
-              strokeWidth="2"
-              fill="none"
-            />
-          </>
-        ))}
-      </svg>
+      {currentAnimationIndex.current === 2 ? (
+        <FreakyDots timer={timer} />
+      ) : (
+        <TrianglePattern timer={timer} />
+      )}
     </>
   );
 };
