@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 
 import SimplexNoise from 'simplex-noise';
 import FreakyDots from './FreakyDots';
-import TrianglePattern from './TrianglePatterns';
+import Lines from './Lines';
+import Matrix from './Matrix';
 
 const simplex = new SimplexNoise();
 
@@ -18,7 +19,7 @@ const App = () => {
   const timerOffsetHori = useRef(0);
   const [elementsAmt] = useState(10);
 
-  const currentAnimationIndex = useRef(2);
+  const currentAnimationIndex = useRef(3);
 
   const [widthVal, setWidthVal] = useState([250, 250, 250, 250, 250, 250, 250, 250]);
   const [heightVal, setHeightVal] = useState(250);
@@ -103,15 +104,20 @@ const App = () => {
     });
   }, []);
 
-  return (
-    <>
-      {currentAnimationIndex.current === 2 ? (
-        <FreakyDots timer={timer} />
-      ) : (
-        <TrianglePattern timer={timer} />
-      )}
-    </>
-  );
+  switch (currentAnimationIndex.current) {
+    case 0:
+    case 1:
+      return <Lines timer={timer} />;
+
+    case 2:
+      return <FreakyDots timer={timer} />;
+
+    case 3:
+      return <Matrix timer={timer} />;
+
+    default:
+      return null;
+  }
 };
 
 export default App;
