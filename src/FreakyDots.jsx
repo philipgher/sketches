@@ -2,11 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 
 const FreakyDots = ({ timer }) => {
   // Freaky dots
-  const freakyDotsAmt = useRef(2000);
-  const freakyDotsPosX = useRef([...Array(freakyDotsAmt.current)].map(() => Math.random() * 1000));
-  const freakyDotsPosY = useRef([...Array(freakyDotsAmt.current)].map(() => Math.random() * 1000));
+  const freakyDotsAmt = useRef(3000);
+  const freakyDotsSize = useRef(800);
+  const freakyDotsPosX = useRef([...Array(freakyDotsAmt.current)].map(() => Math.random() * freakyDotsSize.current));
+  const freakyDotsPosY = useRef([...Array(freakyDotsAmt.current)].map(() => Math.random() * freakyDotsSize.current));
   const freakyDotsCopyOffset = useRef([0, 0]);
   const freakyDotsCopyRotation = useRef(0);
+  const freakyDotsCopyScale = useRef(1);
 
   useEffect(() => {
     window.addEventListener('keyup', (e) => {
@@ -25,6 +27,7 @@ const FreakyDots = ({ timer }) => {
 
   useEffect(() => {
     freakyDotsCopyRotation.current = Math.sin(timer) * 3;
+    freakyDotsCopyScale.current = (Math.sin(timer) + 20) * 0.05;
   });
 
   return (
@@ -40,7 +43,6 @@ const FreakyDots = ({ timer }) => {
                 width: `${5}px`,
                 height: `${5}px`,
                 backgroundColor: 'white',
-                borderRadius: '50%',
               }}
             />
           </>
@@ -51,9 +53,9 @@ const FreakyDots = ({ timer }) => {
           position: 'absolute',
           top: `${freakyDotsCopyOffset.current[1]}px`,
           left: `${freakyDotsCopyOffset.current[0]}px`,
-          width: '1000px',
-          height: '1000px',
-          transform: `rotate(${freakyDotsCopyRotation.current}deg)`,
+          width: `${freakyDotsSize.current}px`,
+          height: `${freakyDotsSize.current}px`,
+          transform: `scale(${freakyDotsCopyScale.current}) rotate(${freakyDotsCopyRotation.current}deg)`,
           transformOrigin: 'center center',
         }}
       >
@@ -67,7 +69,6 @@ const FreakyDots = ({ timer }) => {
                 width: `${5}px`,
                 height: `${5}px`,
                 backgroundColor: 'white',
-                borderRadius: '50%',
               }}
             />
           </>

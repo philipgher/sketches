@@ -6,10 +6,14 @@ const Matrix = ({ timer }) => {
     spread: 15,
     elementAmt: 30,
   });
+
   const rotationMatrixLayer = useRef(0);
+  const scaleMatrixLayer = useRef(1);
+
 
   useEffect(() => {
-    rotationMatrixLayer.current = Math.sin(timer / 4) * 90;
+    scaleMatrixLayer.current = (Math.sin(timer) + 5) * 0.2;
+    // rotationMatrixLayer.current = Math.sin(timer / 4) * 90;
   }, [timer]);
 
   return (
@@ -17,10 +21,12 @@ const Matrix = ({ timer }) => {
       <MatrixLayer
         matrixSettings={matrixSettings.current}
         rotation={0}
+        scale={1}
       />
       <MatrixLayer
         matrixSettings={matrixSettings.current}
         rotation={rotationMatrixLayer.current}
+        scale={scaleMatrixLayer.current}
       />
     </>
   );
@@ -29,13 +35,13 @@ const Matrix = ({ timer }) => {
 export default Matrix;
 
 
-const MatrixLayer = ({ matrixSettings, rotation }) => (
+const MatrixLayer = ({ matrixSettings, rotation, scale }) => (
   <div
     style={{
       position: 'absolute',
       top: '100px',
       left: '100px',
-      transform: `rotate(${rotation}deg)`,
+      transform: `scale(${scale}) rotate(${rotation}deg)`,
       transformOrigin: 'center center',
       height: `${matrixSettings.size * matrixSettings.elementAmt}px`,
       width: `${matrixSettings.size * matrixSettings.elementAmt}px`,
@@ -52,7 +58,7 @@ const MatrixLayer = ({ matrixSettings, rotation }) => (
               backgroundColor: 'white',
               width: `${matrixSettings.size}px`,
               height: `${matrixSettings.size}px`,
-              borderRadius: '50%',
+              // borderRadius: '50%',
             }}
           />
         ))}

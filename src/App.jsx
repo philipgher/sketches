@@ -4,6 +4,7 @@ import SimplexNoise from 'simplex-noise';
 import FreakyDots from './FreakyDots';
 import Lines from './Lines';
 import Matrix from './Matrix';
+import MiniLines from './MiniLines';
 
 const simplex = new SimplexNoise();
 
@@ -19,7 +20,7 @@ const App = () => {
   const timerOffsetHori = useRef(0);
   const [elementsAmt] = useState(10);
 
-  const currentAnimationIndex = useRef(3);
+  const currentAnimationIndex = useRef(4);
 
   const [widthVal, setWidthVal] = useState([250, 250, 250, 250, 250, 250, 250, 250]);
   const [heightVal, setHeightVal] = useState(250);
@@ -33,11 +34,14 @@ const App = () => {
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
-      openDiaframga.current[0] = !openDiaframga.current[0];
+      // openDiaframga.current[0] = !openDiaframga.current[0];
+      currentAnimationIndex.current = 1;
     } else if (e.code === 'Digit2') {
-      openDiaframga.current[1] = !openDiaframga.current[1];
+      // openDiaframga.current[1] = !openDiaframga.current[1];
+      currentAnimationIndex.current = 2;
     } else if (e.code === 'Digit3') {
-      openDiaframga.current[2] = !openDiaframga.current[2];
+      // openDiaframga.current[2] = !openDiaframga.current[2];
+      currentAnimationIndex.current = 3;
     } else if (e.code === 'Digit4') {
       openDiaframga.current[3] = !openDiaframga.current[3];
     } else if (e.code === 'KeyQ') {
@@ -76,10 +80,6 @@ const App = () => {
         }));
         break;
 
-      // Freaky dots rotate x y
-      case 2:
-        break;
-
       default:
         break;
     }
@@ -114,6 +114,9 @@ const App = () => {
 
     case 3:
       return <Matrix timer={timer} />;
+
+    case 4:
+      return <MiniLines timer={timer} />;
 
     default:
       return null;

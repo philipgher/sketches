@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-const TrianglePattern = ({ timer }) => {
+const Lines = ({ timer }) => {
   useEffect(() => {
 
   }, []);
@@ -82,4 +82,4 @@ const TrianglePattern = ({ timer }) => {
   );
 };
 
-export default TrianglePattern;
+export default Lines;
