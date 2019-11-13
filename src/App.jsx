@@ -5,6 +5,8 @@ import FreakyDots from './FreakyDots';
 import Lines from './Lines';
 import Matrix from './Matrix';
 import MiniLines from './MiniLines';
+import IrregularCircles from './IrregularCircles';
+// import FieldOfSuns from './FieldOfSuns';
 
 const simplex = new SimplexNoise();
 
@@ -17,84 +19,24 @@ const simplex = new SimplexNoise();
 
 const App = () => {
   const [timer, setTimer] = useState(0);
-  const timerOffsetHori = useRef(0);
-  const [elementsAmt] = useState(10);
-
-  const currentAnimationIndex = useRef(4);
-
-  const [widthVal, setWidthVal] = useState([250, 250, 250, 250, 250, 250, 250, 250]);
-  const [heightVal, setHeightVal] = useState(250);
-
-  const [widthValHori, setWidthValHori] = useState(0);
-  const [heightValHori, setHeightValHori] = useState(250);
-
-  const openDiaframga = useRef([false, false, false, false]);
-  const spreadAmt = useRef(0);
-  const offsetHoriLines = useRef(false);
+  const currentAnimationIndex = useRef(5);
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
-      // openDiaframga.current[0] = !openDiaframga.current[0];
       currentAnimationIndex.current = 1;
     } else if (e.code === 'Digit2') {
-      // openDiaframga.current[1] = !openDiaframga.current[1];
       currentAnimationIndex.current = 2;
     } else if (e.code === 'Digit3') {
-      // openDiaframga.current[2] = !openDiaframga.current[2];
       currentAnimationIndex.current = 3;
     } else if (e.code === 'Digit4') {
-      openDiaframga.current[3] = !openDiaframga.current[3];
+      currentAnimationIndex.current = 4;
+    } else if (e.code === 'Digit5') {
+      currentAnimationIndex.current = 5;
     } else if (e.code === 'KeyQ') {
-      offsetHoriLines.current = !offsetHoriLines.current;
     }
-  };
-
-
-  const handleTick = () => {
-    switch (currentAnimationIndex.current) {
-      // Pulse all
-      case 0:
-        setWidthVal([...Array(8)].map((_, index) => {
-          if (index % 2) {
-            return ((Math.sin(timer) + 1) * 125);
-          }
-          return -((Math.sin(timer) + 1) * 125);
-        }));
-        // setHeightVal((Math.sin(timer) + 1) * 250);
-
-        // setHeightValHori((Math.sin(timer) + 1) * 250);
-        // setWidthValHori(simplex.noise2D(timer, timer) * 300);
-
-        if (offsetHoriLines.current) {
-          timerOffsetHori.current += 0.01;
-
-          setWidthValHori((Math.sin(timerOffsetHori.current)) * 100);
-        }
-        break;
-
-      // Sweep left
-      case 1:
-        setWidthVal([...Array(8)].map((_, index) => {
-          console.log();
-          return -((Math.sin(timer)) * 250);
-        }));
-        break;
-
-      default:
-        break;
-    }
-
-    // if (personPresent.current && spreadAmt.current < 10) {
-    //   spreadAmt.current += 0.5;
-    // } else if (!personPresent.current && spreadAmt.current > 0) {
-    //   spreadAmt.current -= 0.5;
-    // }
-
-    // requestAnimationFrame(handleTick);
   };
 
   useEffect(() => {
-    requestAnimationFrame(handleTick);
     setTimer(timer + 0.01);
   }, [timer]);
 
@@ -117,6 +59,12 @@ const App = () => {
 
     case 4:
       return <MiniLines timer={timer} />;
+
+    case 5:
+      return <IrregularCircles timer={timer} />;
+
+      // case 6:
+      //   return <FieldOfSuns />;
 
     default:
       return null;

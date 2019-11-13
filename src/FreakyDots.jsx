@@ -26,7 +26,7 @@ const FreakyDots = ({ timer }) => {
   }, []);
 
   useEffect(() => {
-    freakyDotsCopyRotation.current = Math.sin(timer) * 3;
+    freakyDotsCopyRotation.current = Math.sin(timer) * 2;
     freakyDotsCopyScale.current = (Math.sin(timer) + 20) * 0.05;
   });
 
@@ -68,7 +68,7 @@ const FreakyDots = ({ timer }) => {
                 left: `${freakyDotsPosY.current[index]}px`,
                 width: `${5}px`,
                 height: `${5}px`,
-                backgroundColor: 'white',
+                backgroundColor: 'yellow',
               }}
             />
           </>
