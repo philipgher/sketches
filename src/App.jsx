@@ -20,6 +20,7 @@ const simplex = new SimplexNoise();
 const App = () => {
   const [timer, setTimer] = useState(0);
   const currentAnimationIndex = useRef(6);
+  const lastUpdatedAt = useRef(Date.now());
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
@@ -32,12 +33,17 @@ const App = () => {
       currentAnimationIndex.current = 4;
     } else if (e.code === 'Digit5') {
       currentAnimationIndex.current = 5;
-    } else if (e.code === 'KeyQ') {
     }
   };
 
   useEffect(() => {
-    // setTimer(timer + 0.01);
+    setTimeout(() => {
+      // setTimer((timer + 0.01));
+      const now = Date.now();
+      const elapsed = now - lastUpdatedAt.current;
+      setTimer(timer + elapsed * 0.001);
+      lastUpdatedAt.current = Date.now();
+    }, 16);
   }, [timer]);
 
   useEffect(() => {
@@ -64,7 +70,7 @@ const App = () => {
       return <IrregularCircles timer={timer} />;
 
     case 6:
-      return <FieldOfSuns />;
+      return <FieldOfSuns timer={timer} />;
 
     default:
       return null;
