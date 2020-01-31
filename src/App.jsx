@@ -23,17 +23,17 @@ const App = () => {
   const lastUpdatedAt = useRef(Date.now());
 
   const handleKeyDown = (e) => {
-    if (e.code === 'Digit1') {
-      currentAnimationIndex.current = 1;
-    } else if (e.code === 'Digit2') {
-      currentAnimationIndex.current = 2;
-    } else if (e.code === 'Digit3') {
-      currentAnimationIndex.current = 3;
-    } else if (e.code === 'Digit4') {
-      currentAnimationIndex.current = 4;
-    } else if (e.code === 'Digit5') {
-      currentAnimationIndex.current = 5;
-    }
+    // if (e.code === 'Digit1') {
+    //   currentAnimationIndex.current = 1;
+    // } else if (e.code === 'Digit2') {
+    //   currentAnimationIndex.current = 2;
+    // } else if (e.code === 'Digit3') {
+    //   currentAnimationIndex.current = 3;
+    // } else if (e.code === 'Digit4') {
+    //   currentAnimationIndex.current = 4;
+    // } else if (e.code === 'Digit5') {
+    //   currentAnimationIndex.current = 5;
+    // }
   };
 
   useEffect(() => {
