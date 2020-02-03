@@ -8,7 +8,6 @@ import useInterval from './utils/useInterval';
 import GeneticAlgorithm from './utils/GeneticAlgorithm';
 
 const swatches = originalSwatches.map((swatch, i) => ({ rgb: swatch, i }));
-console.log('swatches', swatches);
 
 const getFitnessForSwatch = (shapedPhenoType, swatch, i, j, row) => (
   (i - 1 >= 0
@@ -24,8 +23,6 @@ const getFitnessForSwatch = (shapedPhenoType, swatch, i, j, row) => (
 
 // use oldPhenotype and some random function to make a change to your phenotype
 const mutationFunction = (oldPhenotype) => {
-  // const randomSamples = sampleSize(oldPhenotype.swatches, 10);
-
   const shapedPhenoType = reshape(oldPhenotype.swatches, 25);
 
   const shapedPhenotypeDistances = shapedPhenoType.map((row, i) => (
@@ -35,24 +32,23 @@ const mutationFunction = (oldPhenotype) => {
     }))
   )).flat().sort((cur, prev) => cur.score - prev.score);
 
-  console.log('shapedPhenotypeDistances', shapedPhenotypeDistances);
-
   const worstElements = shapedPhenotypeDistances.slice(oldPhenotype.swatches.length - 20, oldPhenotype.swatches.length);
-  console.log(worstElements);
 
+  const newPhenotype = { swatches: [...oldPhenotype.swatches] };
 
-  // const newPhenotype = { swatches: [...oldPhenotype.swatches] };
-  // for (let i = 0; i < randomSamples.length; i += 1) {
-  //   newPhenotype.swatches.splice(
-  //     newPhenotype.swatches.indexOf(randomSamples[i]),
-  //     1,
-  //   );
-  //   newPhenotype.swatches.splice(
-  //     Math.floor(Math.random() * oldPhenotype.swatches.length - 1),
-  //     0,
-  //     randomSamples[i],
-  //   );
-  // }
+  for (let i = 0; i < worstElements.length; i += 1) {
+    newPhenotype.swatches.splice(
+      newPhenotype.swatches.findIndex(swatch => swatch.i === worstElements[i].i),
+      1,
+    );
+
+    newPhenotype.swatches.splice(
+      Math.floor(Math.random() * oldPhenotype.swatches.length - 1),
+      0,
+      oldPhenotype.swatches.find(swatch => swatch.i === worstElements[i].i),
+    );
+  }
+
 
   return newPhenotype;
 };
