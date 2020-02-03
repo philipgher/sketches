@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import SimplexNoise from 'simplex-noise';
+// import SimplexNoise from 'simplex-noise';
 import FreakyDots from './FreakyDots';
 import Lines from './Lines';
 import Matrix from './Matrix';
 import MiniLines from './MiniLines';
 import IrregularCircles from './IrregularCircles';
 // import FieldOfSuns from './FieldOfSuns';
+import ColorSorting from './ColorSorting';
 
-const simplex = new SimplexNoise();
+// const simplex = new SimplexNoise();
 
 // max callstack = 4172
 
@@ -19,7 +20,7 @@ const simplex = new SimplexNoise();
 
 const App = () => {
   const [timer, setTimer] = useState(0);
-  const currentAnimationIndex = useRef(5);
+  const currentAnimationIndex = useRef(6);
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
@@ -36,9 +37,9 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    setTimer(timer + 0.01);
-  }, [timer]);
+  // useEffect(() => {
+  //   setTimer(timer + 0.01);
+  // }, [timer]);
 
   useEffect(() => {
     window.addEventListener('keyup', (e) => {
@@ -63,8 +64,8 @@ const App = () => {
     case 5:
       return <IrregularCircles timer={timer} />;
 
-      // case 6:
-      //   return <FieldOfSuns />;
+    case 6:
+      return <ColorSorting />;
 
     default:
       return null;
