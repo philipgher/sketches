@@ -32,7 +32,10 @@ const mutationFunction = (oldPhenotype) => {
     }))
   )).flat().sort((cur, prev) => cur.score - prev.score);
 
-  const worstElements = shapedPhenotypeDistances.slice(oldPhenotype.swatches.length - 20, oldPhenotype.swatches.length);
+  const worstElements = shapedPhenotypeDistances.slice(
+    oldPhenotype.swatches.length - 20,
+    oldPhenotype.swatches.length,
+  );
 
   const newPhenotype = { swatches: [...oldPhenotype.swatches] };
 
@@ -82,7 +85,7 @@ const ColorSorting = () => {
   useInterval(() => {
     evolution.evolve();
     setSwatchLayout(reshape(evolution.best().swatches, 25));
-  }, 50);
+  }, 1);
 
   const handleClickButton = () => {
     evolution.evolve();
@@ -103,14 +106,14 @@ const ColorSorting = () => {
                 left: '0',
                 width: '35px',
                 height: '35px',
-                backgroundColor: `rgba(${swatch.rgb[0]}, ${swatch.rgb[1]}, ${swatch.rgb[2]})`,
-                // transition: 'all 100ms ease-in-out',
+                backgroundColor: `rgb(${swatch.rgb[0]}, ${swatch.rgb[1]}, ${swatch.rgb[2]})`,
+                // transition: 'all 10ms ease-in-out',
               }}
             />
           ))
         ))
       ) : (<div />)}
-      {reshape(swatches, 25).map((swatchRow, i) => (
+      {/* {reshape(swatches, 25).map((swatchRow, i) => (
         swatchRow.map((swatch, j) => (
           <div
             key={`${swatch.rgb}-${swatch.i}`}
@@ -127,7 +130,7 @@ const ColorSorting = () => {
       ))}
       <button onClick={handleClickButton} style={{ zIndex: 100 }}>
         Next evolution
-      </button>
+      </button> */}
     </>
   );
 };
