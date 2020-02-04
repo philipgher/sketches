@@ -1,13 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import * as Vibrant from 'node-vibrant';
-import GeneticAlgorithmConstructor from 'geneticalgorithm';
-import { sampleSize, uniqWith, isEqual } from 'lodash';
 import originalSwatches from './assets/swatches';
 import reshape from './utils/reshape';
 import useInterval from './utils/useInterval';
 import GeneticAlgorithm from './utils/GeneticAlgorithm';
+import generateColorsGrid from './utils/generateColorsGrid';
 
 const swatches = originalSwatches.map((swatch, i) => ({ rgb: swatch, i }));
+
+let colorsArray;
+(async () => {
+  colorsArray = await generateColorsGrid(
+    swatches.length,
+  );
+  console.log(colorsArray);
+})();
 
 const getFitnessForSwatch = (shapedPhenoType, swatch, i, j, row) => (
   (i - 1 >= 0
@@ -52,7 +59,6 @@ const mutationFunction = (oldPhenotype) => {
     );
   }
 
-
   return newPhenotype;
 };
 
@@ -84,13 +90,8 @@ const ColorSorting = () => {
 
   useInterval(() => {
     evolution.evolve();
-    setSwatchLayout(reshape(evolution.best().swatches, 25));
+    // setSwatchLayout(reshape(evolution.best().swatches, 25));
   }, 1);
-
-  const handleClickButton = () => {
-    evolution.evolve();
-    setSwatchLayout(reshape(evolution.best().swatches, 25));
-  };
 
   return (
     <>
@@ -101,7 +102,7 @@ const ColorSorting = () => {
               key={`${swatch.rgb}-${swatch.i}`}
               style={{
                 position: 'absolute',
-                transform: `translate(${j * 40}px, ${i * 40 + 35}px)`,
+                transform: `translate(${j * 40 + 10}px, ${i * 40 + 10}px)`,
                 top: '0',
                 left: '0',
                 width: '35px',
@@ -127,10 +128,7 @@ const ColorSorting = () => {
             }}
           />
         ))
-      ))}
-      <button onClick={handleClickButton} style={{ zIndex: 100 }}>
-        Next evolution
-      </button> */}
+      ))} */}
     </>
   );
 };
