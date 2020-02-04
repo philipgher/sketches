@@ -1,9 +1,6 @@
 import asyncImgLoad from './asyncImgLoad';
-// import hueGradientSquare from '../assets/radial-9.png';
 
 const generateColorsGrid = async (productsAmt) => {
-//   const hueGradientSquare = await fetch('dist/radial-9.png').then(res => res);
-
   const canvas = document.createElement('canvas');
   canvas.width = 100;
   canvas.height = 100;

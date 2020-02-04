@@ -3,7 +3,9 @@
 
 class GeneticAlgorithm {
   constructor(config) {
-    // console.log(config);
+    this.logFittest = !!config.logFittest;
+    console.log(this.logFittest);
+
 
     this.mutationFunction = config.mutationFunction;
     this.crossoverFunction = config.crossoverFunction;
@@ -41,7 +43,11 @@ class GeneticAlgorithm {
 
   best() {
     const fits = this._calculateFitnesses();
-    console.log('fittest value:', fits[0].score);
+
+    if (this.logFittest === true) {
+      console.log('fittest value:', fits[0].score);
+    }
+
     return this.population[fits[0].i];
   }
 }

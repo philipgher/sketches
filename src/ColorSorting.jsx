@@ -1,46 +1,33 @@
 import React, { useState } from 'react';
 import * as Vibrant from 'node-vibrant';
-import originalSwatches from './assets/swatches';
+import originalSwatchesCK from './assets/swatches-ck';
+import originalSwatchesTH from './assets/swatches-th';
 import reshape from './utils/reshape';
 import useInterval from './utils/useInterval';
 import GeneticAlgorithm from './utils/GeneticAlgorithm';
 import generateColorsGrid from './utils/generateColorsGrid';
 
-const swatches = originalSwatches.map((swatch, i) => ({ rgb: swatch, i }));
+const swatches = originalSwatchesTH.map((swatch, i) => ({ rgb: swatch, i }));
+const gridWidth = Math.ceil(100 / Math.floor(100 / Math.sqrt(swatches.length)));
+console.log(gridWidth);
 
-let colorsArray;
-(async () => {
-  colorsArray = await generateColorsGrid(
-    swatches.length,
-  );
-  console.log(colorsArray);
-})();
-
-const getFitnessForSwatch = (shapedPhenoType, swatch, i, j, row) => (
-  (i - 1 >= 0
-    ? Vibrant.Util.rgbDiff(swatch.rgb, shapedPhenoType[i - 1][j].rgb) : 0) // top
-    + (j + 1 < row.length
-      ? Vibrant.Util.rgbDiff(swatch.rgb, shapedPhenoType[i][j + 1].rgb) : 0) // right
-    + (i + 1 < shapedPhenoType.length && shapedPhenoType[i + 1][j] !== undefined
-      ? Vibrant.Util.rgbDiff(swatch.rgb, shapedPhenoType[i + 1][j].rgb) : 0) // bottom
-    + (j - 1 >= 0
-      ? Vibrant.Util.rgbDiff(swatch.rgb, shapedPhenoType[i][j - 1].rgb) : 0) // left
-    / 4 // to get average
+const getFitnessForSwatch = (swatch, i, j) => (
+  Vibrant.Util.rgbDiff(swatch.rgb, colorsArray[i][j])
 );
 
 // use oldPhenotype and some random function to make a change to your phenotype
 const mutationFunction = (oldPhenotype) => {
-  const shapedPhenoType = reshape(oldPhenotype.swatches, 25);
+  const shapedPhenoType = reshape(oldPhenotype.swatches, gridWidth);
 
   const shapedPhenotypeDistances = shapedPhenoType.map((row, i) => (
     row.map((swatch, j) => ({
-      score: getFitnessForSwatch(shapedPhenoType, swatch, i, j, row),
+      score: getFitnessForSwatch(swatch, i, j),
       i: swatch.i,
     }))
   )).flat().sort((cur, prev) => cur.score - prev.score);
 
   const worstElements = shapedPhenotypeDistances.slice(
-    oldPhenotype.swatches.length - 20,
+    oldPhenotype.swatches.length - 50,
     oldPhenotype.swatches.length,
   );
 
@@ -65,10 +52,10 @@ const mutationFunction = (oldPhenotype) => {
 // use phenotype and possibly some other information to determine the fitness number.
 // lower is better, higher is worse.
 const fitnessFunction = (phenotype) => {
-  const shapedPhenoType = reshape(phenotype.swatches, 25);
+  const shapedPhenoType = reshape(phenotype.swatches, gridWidth);
 
   const shapedPhenotypeDistances = shapedPhenoType.map((row, i) => (
-    row.map((swatch, j) => getFitnessForSwatch(shapedPhenoType, swatch, i, j, row))
+    row.map((swatch, j) => getFitnessForSwatch(swatch, i, j))
   ));
 
   const fitnessVal = (shapedPhenotypeDistances.flat().reduce(
@@ -78,19 +65,30 @@ const fitnessFunction = (phenotype) => {
   return fitnessVal;
 };
 
-const evolution = new GeneticAlgorithm({
-  mutationFunction,
-  fitnessFunction,
-  firstIndividual: { swatches: [...swatches] },
-  populationSize: 50,
-});
+let colorsArray;
+let evolution;
+(async () => {
+  colorsArray = await generateColorsGrid(
+    swatches.length,
+  );
+
+  console.log(colorsArray);
+
+  evolution = new GeneticAlgorithm({
+    mutationFunction,
+    fitnessFunction,
+    firstIndividual: { swatches: [...swatches] },
+    populationSize: 50,
+    logFittest: true,
+  });
+})();
 
 const ColorSorting = () => {
   const [swatchLayout, setSwatchLayout] = useState();
 
   useInterval(() => {
     evolution.evolve();
-    // setSwatchLayout(reshape(evolution.best().swatches, 25));
+    setSwatchLayout(reshape(evolution.best().swatches, gridWidth));
   }, 1);
 
   return (
@@ -114,14 +112,15 @@ const ColorSorting = () => {
           ))
         ))
       ) : (<div />)}
-      {/* {reshape(swatches, 25).map((swatchRow, i) => (
+      {/* {reshape(swatches, gridWidth).map((swatchRow, i) => (
         swatchRow.map((swatch, j) => (
           <div
             key={`${swatch.rgb}-${swatch.i}`}
             style={{
               position: 'absolute',
-              top: `${i * 40 + 35}px`,
-              left: `${j * 40}px`,
+              transform: `translate(${j * 40 + 10}px, ${i * 40 + 10}px)`,
+              top: '0px',
+              left: '0px',
               width: '10px',
               height: '10px',
               backgroundColor: `rgba(${swatch.rgb[0]}, ${swatch.rgb[1]}, ${swatch.rgb[2]})`,
@@ -129,6 +128,24 @@ const ColorSorting = () => {
           />
         ))
       ))} */}
+      {colorsArray && (
+        colorsArray.map((swatchRow, i) => (
+          swatchRow.map((swatch, j) => (
+            <div
+              key={`${swatch}`}
+              style={{
+                position: 'absolute',
+                transform: `translate(${j * 40 + 35}px, ${i * 40 + 10}px)`,
+                top: '0px',
+                left: '0px',
+                width: '10px',
+                height: '10px',
+                backgroundColor: `rgba(${swatch[0]}, ${swatch[1]}, ${swatch[2]})`,
+              }}
+            />
+          ))
+        ))
+      )}
     </>
   );
 };
