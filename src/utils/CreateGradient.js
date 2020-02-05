@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Vibrant from 'node-vibrant';
-import swatches from './assets/swatches-th';
+import swatches from '../assets/swatches-ck';
 
 console.log(swatches);
 const colorsForGradientMap = [
@@ -68,27 +68,27 @@ const CreateGradient = () => {
     white: colorsForGradientMap[1].counter / (swatches.length / 100) / 100,
     colors: [
       {
-        val: 0.1,
+        val: colorsForGradientMap[2].counter / (swatches.length / 100) / 100,
         col: 'rgb(255, 0, 255)',
       },
       {
-        val: 0.1,
+        val: colorsForGradientMap[3].counter / (swatches.length / 100) / 100,
         col: 'rgb(255, 0, 0)',
       },
       {
-        val: 0.1,
+        val: colorsForGradientMap[4].counter / (swatches.length / 100) / 100,
         col: 'rgb(255, 255, 0)',
       },
       {
-        val: 0.1,
+        val: colorsForGradientMap[5].counter / (swatches.length / 100) / 100,
         col: 'rgb(0, 255, 0)',
       },
       {
-        val: 0.1,
+        val: colorsForGradientMap[6].counter / (swatches.length / 100) / 100,
         col: 'rgb(0, 255, 255)',
       },
       {
-        val: 0.1,
+        val: colorsForGradientMap[7].counter / (swatches.length / 100) / 100,
         col: 'rgb(0, 0, 255)',
       },
     ],

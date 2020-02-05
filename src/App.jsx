@@ -8,7 +8,6 @@ import MiniLines from './MiniLines';
 import IrregularCircles from './IrregularCircles';
 // import FieldOfSuns from './FieldOfSuns';
 import ColorSorting from './ColorSorting';
-import CreateGradient from './CreateGradient';
 
 // const simplex = new SimplexNoise();
 
@@ -21,7 +20,7 @@ import CreateGradient from './CreateGradient';
 
 const App = () => {
   const [timer, setTimer] = useState(0);
-  const currentAnimationIndex = useRef(7);
+  const currentAnimationIndex = useRef(6);
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
@@ -66,9 +65,6 @@ const App = () => {
 
     case 6:
       return <ColorSorting />;
-
-    case 7:
-      return <CreateGradient />;
 
     default:
       return null;
