@@ -9,7 +9,6 @@ import generateColorsGrid from './utils/generateColorsGrid';
 
 const swatches = originalSwatchesTH.map((swatch, i) => ({ rgb: swatch, i }));
 const gridWidth = Math.ceil(100 / Math.floor(100 / Math.sqrt(swatches.length)));
-console.log(gridWidth);
 
 const getFitnessForSwatch = (swatch, i, j) => (
   Vibrant.Util.rgbDiff(swatch.rgb, colorsArray[i][j])
@@ -67,21 +66,21 @@ const fitnessFunction = (phenotype) => {
 
 let colorsArray;
 let evolution;
-(async () => {
-  colorsArray = await generateColorsGrid(
-    swatches.length,
-  );
+// (async () => {
+//   colorsArray = await generateColorsGrid(
+//     swatches.length,
+//   );
 
-  console.log(colorsArray);
+//   console.log(colorsArray);
 
-  evolution = new GeneticAlgorithm({
-    mutationFunction,
-    fitnessFunction,
-    firstIndividual: { swatches: [...swatches] },
-    populationSize: 50,
-    logFittest: true,
-  });
-})();
+//   evolution = new GeneticAlgorithm({
+//     mutationFunction,
+//     fitnessFunction,
+//     firstIndividual: { swatches: [...swatches] },
+//     populationSize: 50,
+//     logFittest: true,
+//   });
+// })();
 
 const ColorSorting = () => {
   const [swatchLayout, setSwatchLayout] = useState();

@@ -8,6 +8,7 @@ import MiniLines from './MiniLines';
 import IrregularCircles from './IrregularCircles';
 // import FieldOfSuns from './FieldOfSuns';
 import ColorSorting from './ColorSorting';
+import CreateGradient from './CreateGradient';
 
 // const simplex = new SimplexNoise();
 
@@ -20,7 +21,7 @@ import ColorSorting from './ColorSorting';
 
 const App = () => {
   const [timer, setTimer] = useState(0);
-  const currentAnimationIndex = useRef(6);
+  const currentAnimationIndex = useRef(7);
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
@@ -33,7 +34,6 @@ const App = () => {
       currentAnimationIndex.current = 4;
     } else if (e.code === 'Digit5') {
       currentAnimationIndex.current = 5;
-    } else if (e.code === 'KeyQ') {
     }
   };
 
@@ -66,6 +66,9 @@ const App = () => {
 
     case 6:
       return <ColorSorting />;
+
+    case 7:
+      return <CreateGradient />;
 
     default:
       return null;
