@@ -82,10 +82,7 @@ const Products3D = () => {
       camera.current = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 2, -10), scene);
 
       let pointerState = {
-        start: [0, 0],
-        previous: [0, 0],
         last: [0, 0],
-        movement: [0, 0],
         delta: [0, 0],
       };
 
@@ -98,11 +95,26 @@ const Products3D = () => {
             break;
 
           case BABYLON.PointerEventTypes.POINTERUP:
-            pointerState.previous = pointerState.movement;
+            BABYLON.Animation.CreateAndStartAnimation(
+              'velocity',
+              camera.current,
+              'position',
+              60,
+              45,
+              camera.current.position,
+              new BABYLON.Vector3(
+                camera.current.position.x + pointerState.delta[0] * (camera.current.position.z / -40),
+                camera.current.position.y - pointerState.delta[1] * (camera.current.position.z / -40),
+                camera.current.position.z
+              ),
+              0,
+              easeOut,
+            );
             break;
 
           case BABYLON.PointerEventTypes.POINTERMOVE:
-            pointerState.movement = [pointerState.previous[0] - (pointerState.start[0] - event.offsetX), pointerState.previous[1] - (pointerState.start[1] - event.offsetY)];
+            pointerState.delta = [pointerState.last[0] - event.offsetX, pointerState.last[1] - event.offsetY];
+            pointerState.last = [event.offsetX, event.offsetY];
             break;
 
           case BABYLON.PointerEventTypes.POINTERWHEEL:
@@ -115,8 +127,10 @@ const Products3D = () => {
             break;
         }
 
-        camera.current.position.x = pointerState.movement[0] * (camera.current.position.z / 2500);
-        camera.current.position.y = -pointerState.movement[1] * (camera.current.position.z / 2500);
+        console.log(pointerState.delta)
+
+        camera.current.position.x -= pointerState.delta[0] * (camera.current.position.z / 2000);
+        camera.current.position.y += pointerState.delta[1] * (camera.current.position.z / 2000);
       });
 
       const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
