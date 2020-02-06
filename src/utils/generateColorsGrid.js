@@ -1,26 +1,15 @@
-import asyncImgLoad from './asyncImgLoad';
+const generateColorsGrid = async (productsAmt, gradientCTX, size) => {
+  const imageData = gradientCTX.getImageData(0, 0, 100, 100);
 
-const generateColorsGrid = async (productsAmt) => {
-  const canvas = document.createElement('canvas');
-  canvas.width = 100;
-  canvas.height = 100;
-  const ctx = canvas.getContext('2d');
-
-  const img = await asyncImgLoad('dist/radial-9.png');
-
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-  const pixelSpacing = Math.floor(canvas.width / Math.sqrt(productsAmt));
+  const pixelSpacing = Math.floor(size / Math.sqrt(productsAmt));
 
   const colorsArray = [];
   let colorsArrayRow = [];
   let pixelCounter = 0;
 
   for (let i = 0; i < imageData.data.length; i += 1) {
-    const x = (i / 4) % canvas.width;
-    const y = Math.floor(i / 4 / canvas.width);
+    const x = (i / 4) % size;
+    const y = Math.floor(i / 4 / size);
 
     if (x === 0 && i !== 0) {
       if (colorsArrayRow.length !== 0) {

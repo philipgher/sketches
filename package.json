@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babylonjs": "^4.0.3",
     "express": "^4.16.4",
     "genetic-js": "^0.1.14",
     "geneticalgorithm": "^1.0.2",
@@ -19,6 +20,8 @@
     "node-vibrant": "^3.1.5",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-spring": "9.0.0-canary.809.4.a637589",
+    "react-use-gesture": "^7.0.3",
     "simplex-noise": "^2.4.0"
   },
   "devDependencies": {
