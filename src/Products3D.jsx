@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as Vibrant from 'node-vibrant';
 import * as BABYLON from 'babylonjs';
 import { useGesture } from 'react-use-gesture';
+import { animated } from 'react-spring';
 import createLookupGradient from './utils/createLookupGradient';
 import generateColorsGrid from './utils/generateColorsGrid';
 import originalSwatches from './assets/swatches-ck';
@@ -17,8 +18,18 @@ easeOut.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
 const easeInOut = new BABYLON.CubicEase();
 easeInOut.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
 
+const clickProduct = (meshName) => {
+  const productPositionInGrid = meshName.split('-');
+
+  console.log(productPositionInGrid);
+};
+
 const Products3D = () => {
   const camera = useRef();
+
+  const isPinching = useRef();
+  const firstFinger = useRef();
+  const isDragging = useRef();
 
   useEffect(() => {
     (async () => {
@@ -84,107 +95,12 @@ const Products3D = () => {
 
       camera.current = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 2, -10), scene);
 
-      const pointerState = {
-        tap: false,
-        down: false,
-        downSec: false,
-        last: [0, 0],
-        lastSec: [0, 0],
-        delta: [0, 0],
-        deltaSec: [0, 0],
-      };
-
-      scene.onPointerObservable.add((pointerInfo) => {
-        const { event } = pointerInfo;
-
-        console.log(event.isPrimary);
-
-
-        switch (pointerInfo.type) {
-          case BABYLON.PointerEventTypes.POINTERDOWN:
-            if (event.isPrimary) {
-              pointerState.down = true;
-              pointerState.start = [event.offsetX, event.offsetY];
-              pointerState.last = [event.offsetX, event.offsetY];
-            } else {
-              pointerState.downSec = true;
-              pointerState.startSec = [event.offsetX, event.offsetY];
-              pointerState.lastSec = [event.offsetX, event.offsetY];
-            }
-            break;
-
-          case BABYLON.PointerEventTypes.POINTERUP:
-            if (event.isPrimary) {
-              pointerState.down = false;
-            } else {
-              pointerState.downSec = false;
-            }
-
-            if (pointerState.tap) {
-              pointerState.tap = false;
-              return;
-            }
-
-            if (event.isPrimary) {
-              BABYLON.Animation.CreateAndStartAnimation(
-                'velocity',
-                camera.current,
-                'position',
-                60,
-                45,
-                camera.current.position,
-                new BABYLON.Vector3(
-                  camera.current.position.x + pointerState.delta[0] * (camera.current.position.z / -40),
-                  camera.current.position.y - pointerState.delta[1] * (camera.current.position.z / -40),
-                  camera.current.position.z,
-                ),
-                0,
-                easeOut,
-              );
-            }
-            break;
-
-          case BABYLON.PointerEventTypes.POINTERMOVE:
-            pointerState.tap = false;
-
-            if (pointerState.down) {
-              pointerState.delta = [pointerState.last[0] - event.offsetX, pointerState.last[1] - event.offsetY];
-              pointerState.last = [event.offsetX, event.offsetY];
-            }
-            break;
-
-          case BABYLON.PointerEventTypes.POINTERWHEEL:
-            camera.current.position.z += event.deltaY * 0.01;
-
-            break;
-
-          case BABYLON.PointerEventTypes.POINTERTAP:
-            console.log('tap');
-            pointerState.tap = true;
-
-            console.log(event);
-
-            BABYLON.Animation.CreateAndStartAnimation(
-              'clickBounce',
-              camera.current,
-              'position.z',
-              60,
-              45,
-              camera.current.position.z,
-              -3.5,
-              0,
-              easeInOut,
-            );
-
-            break;
-
-          default:
-            break;
-        }
-
-        if (pointerState.down && event.isPrimary) {
-          camera.current.position.x -= pointerState.delta[0] * (camera.current.position.z / 2000);
-          camera.current.position.y += pointerState.delta[1] * (camera.current.position.z / 2000);
+      canvas.addEventListener('click', () => {
+        // get which object is 'picked' - touched
+        const pickResult = scene.pick(scene.pointerX, scene.pointerY);
+        console.log(pickResult);
+        if (pickResult.pickedMesh) {
+          clickProduct(pickResult.pickedMesh.name);
         }
       });
 
@@ -204,14 +120,6 @@ const Products3D = () => {
 
       faceUV[1] = new BABYLON.Vector4(1, -1, 0, 0);
 
-      const clickProduct = (event) => {
-        const pickedProduct = event.meshUnderPointer.name;
-
-        const productPositionInGrid = pickedProduct.split('-');
-
-        console.log(productPositionInGrid);
-      };
-
       [...Array(11)].forEach((_, i) => {
         [...Array(11)].forEach((__, j) => {
           const box = BABYLON.MeshBuilder.CreateBox(`${i}-${j}`, {
@@ -220,11 +128,6 @@ const Products3D = () => {
           box.position.x = i;
           box.position.y = j;
           box.material = planeMaterial;
-
-          box.actionManager = new BABYLON.ActionManager(scene);
-          box.actionManager.registerAction(
-            new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, clickProduct),
-          );
         });
       });
 
@@ -233,20 +136,94 @@ const Products3D = () => {
 
     const scene = createScene();
 
-    // scene.debugLayer.show();
-
     engine.runRenderLoop(() => {
       scene.render();
     });
   }, []);
 
+  const bind = useGesture(
+    {
+      onDrag: ({
+        down, delta: [dx, dy], vxvy: [vx, vy], last,
+      }) => {
+        if (isPinching.current) {
+          return;
+        }
+
+        isDragging.current = !last;
+
+        if (down) {
+          camera.current.position.x += dx * (camera.current.position.z * 0.0005);
+          camera.current.position.y -= dy * (camera.current.position.z * 0.0005);
+        } else {
+          BABYLON.Animation.CreateAndStartAnimation(
+            'velocity',
+            camera.current,
+            'position',
+            60,
+            45,
+            camera.current.position,
+            new BABYLON.Vector3(
+              camera.current.position.x + vx * (camera.current.position.z * 0.05),
+              camera.current.position.y - vy * (camera.current.position.z * 0.05),
+              camera.current.position.z,
+            ),
+            0,
+            easeOut,
+          );
+        }
+      },
+      onWheel: () => {
+        console.log('wheel');
+      },
+      onPinch: ({
+        delta: [dd], vdva: [vd], first, last,
+      }) => {
+        if (first) {
+          isPinching.current = true;
+          firstFinger.current = false;
+        }
+
+        if (last && !isDragging.current) {
+          isPinching.current = false;
+          firstFinger.current = true;
+
+          if (firstFinger.current) {
+            console.log('last', vd);
+
+            BABYLON.Animation.CreateAndStartAnimation(
+              'velocityZoom',
+              camera.current,
+              'position.z',
+              60,
+              45,
+              camera.current.position.z,
+              camera.current.position.z - vd * 2,
+              0,
+              easeOut,
+            );
+          }
+        } else {
+          camera.current.position.z += dd * (camera.current.position.z * -0.00125);
+        }
+      },
+    },
+    {
+      drag: {
+        filterTaps: true,
+      },
+    },
+  );
+
   return (
-    <>
-      <canvas style={{ position: 'absolute', top: '0', left: '0' }} touch-action="none" id="renderCanvas" width="1080" height="1920" />
-      {/* <div style={{
+    <div
+      {...bind()}
+      style={{
         position: 'absolute', top: '0', left: '0', width: '1080px', height: '1920px',
-      }} /> */}
-    </>
+      }}
+    >
+      <canvas touch-action="none" id="renderCanvas" width="1080" height="1920" />
+    </div>
   );
 };
 

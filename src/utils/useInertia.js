@@ -24,12 +24,12 @@ const useInertia = (initialProps) => {
               const vel = props[key].velocity;
 
               const bound =
-				// eslint-disable-next-line no-nested-ternary
-				v >= bounds[key][1]
-				  ? bounds[key][1]
-				  : v <= bounds[key][0]
-				    ? bounds[key][0]
-				    : undefined;
+                // eslint-disable-next-line no-nested-ternary
+                v >= bounds[key][1]
+                  ? bounds[key][1]
+                  : v <= bounds[key][0]
+                    ? bounds[key][0]
+                    : undefined;
 
               if (bound !== undefined) {
                 props[key].stop();
