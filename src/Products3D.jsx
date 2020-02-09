@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from 'react';
 import * as Vibrant from 'node-vibrant';
 import * as BABYLON from 'babylonjs';
 import { useGesture } from 'react-use-gesture';
@@ -18,18 +20,36 @@ easeOut.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
 const easeInOut = new BABYLON.CubicEase();
 easeInOut.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
 
-const clickProduct = (meshName) => {
-  const productPositionInGrid = meshName.split('-');
-
-  console.log(productPositionInGrid);
-};
-
 const Products3D = () => {
   const camera = useRef();
 
   const isPinching = useRef();
   const firstFinger = useRef();
   const isDragging = useRef();
+
+  const clickProduct = useCallback((meshName) => {
+    const productPositionInGrid = meshName.split('-');
+
+    console.log(productPositionInGrid);
+
+    BABYLON.Animation.CreateAndStartAnimation(
+      'velocity',
+      camera.current,
+      'position',
+      60,
+      45,
+      camera.current.position,
+      new BABYLON.Vector3(
+        Number(productPositionInGrid[0]),
+        Number(productPositionInGrid[1]),
+        -3,
+      ),
+      0,
+      easeInOut,
+    );
+
+    // openProductDetail(productClicked, productClicked.colorID);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -144,9 +164,9 @@ const Products3D = () => {
   const bind = useGesture(
     {
       onDrag: ({
-        down, delta: [dx, dy], vxvy: [vx, vy], last,
+        tap, down, delta: [dx, dy], vxvy: [vx, vy], last,
       }) => {
-        if (isPinching.current) {
+        if (isPinching.current || tap) {
           return;
         }
 
@@ -173,9 +193,6 @@ const Products3D = () => {
           );
         }
       },
-      onWheel: () => {
-        console.log('wheel');
-      },
       onPinch: ({
         delta: [dd], vdva: [vd], first, last,
       }) => {
@@ -188,9 +205,8 @@ const Products3D = () => {
           isPinching.current = false;
           firstFinger.current = true;
 
+          // onPinch last is true in 2 cycles (I guess for both fingers)
           if (firstFinger.current) {
-            console.log('last', vd);
-
             BABYLON.Animation.CreateAndStartAnimation(
               'velocityZoom',
               camera.current,
@@ -206,6 +222,10 @@ const Products3D = () => {
         } else {
           camera.current.position.z += dd * (camera.current.position.z * -0.00125);
         }
+      },
+      onWheel: ({ delta: [, dy] }) => {
+        console.log('wheel');
+        camera.current.position.z += dy * 0.01;
       },
     },
     {
