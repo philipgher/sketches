@@ -128,9 +128,13 @@ const Products3D = () => {
       light.intensity = 0.7;
 
       const planeMaterial = new BABYLON.StandardMaterial('planeMaterial', scene);
-      planeMaterial.diffuseTexture = new BABYLON.Texture('/dist/img/1.png', scene);
-      planeMaterial.opacityTexture = planeMaterial.diffuseTexture;
-      planeMaterial.emissiveTexture = planeMaterial.diffuseTexture;
+      const texture = new BABYLON.Texture('/dist/img/1.png', scene);
+      texture.onLoadObservable.add((loadedTexture) => {
+        console.log(loadedTexture);
+      });
+      planeMaterial.diffuseTexture = texture;
+      planeMaterial.opacityTexture = texture;
+      planeMaterial.emissiveTexture = texture;
       planeMaterial.backFaceCulling = true;
 
       const faceUV = new Array(6);
