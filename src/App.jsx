@@ -6,6 +6,7 @@ import Lines from './Lines';
 import Matrix from './Matrix';
 import MiniLines from './MiniLines';
 import IrregularCircles from './IrregularCircles';
+import WindSimulation from './WindSimulation';
 // import FieldOfSuns from './FieldOfSuns';
 
 const simplex = new SimplexNoise();
@@ -19,7 +20,7 @@ const simplex = new SimplexNoise();
 
 const App = () => {
   const [timer, setTimer] = useState(0);
-  const currentAnimationIndex = useRef(5);
+  const currentAnimationIndex = useRef(6);
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
@@ -32,13 +33,12 @@ const App = () => {
       currentAnimationIndex.current = 4;
     } else if (e.code === 'Digit5') {
       currentAnimationIndex.current = 5;
-    } else if (e.code === 'KeyQ') {
     }
   };
 
-  useEffect(() => {
-    setTimer(timer + 0.01);
-  }, [timer]);
+  // useEffect(() => {
+  //   setTimer(timer + 0.01);
+  // }, [timer]);
 
   useEffect(() => {
     window.addEventListener('keyup', (e) => {
@@ -63,8 +63,8 @@ const App = () => {
     case 5:
       return <IrregularCircles timer={timer} />;
 
-      // case 6:
-      //   return <FieldOfSuns />;
+    case 6:
+      return <WindSimulation />;
 
     default:
       return null;
