@@ -159,7 +159,7 @@ const createLookupGradient = (swatches, size, canvas) => {
 
   const ctx = canvas.getContext('2d');
 
-  const hueGradient = ctx.createLinearGradient(0, 0, 0, size);
+  const hueGradient = ctx.createLinearGradient(25, 0, 75, size);
 
   Object.values(percentages.colors).reduce((acc, color) => {
     hueGradient.addColorStop(
@@ -173,7 +173,7 @@ const createLookupGradient = (swatches, size, canvas) => {
   ctx.fillStyle = hueGradient;
   ctx.fillRect(0, 0, size, size);
 
-  const blackWhite = ctx.createLinearGradient(0, 0, size, 0);
+  const blackWhite = ctx.createLinearGradient(0, 80, size, 20);
   blackWhite.addColorStop(0.0, 'rgba(0, 0, 0, 1)');
   blackWhite.addColorStop(percentages.black, 'rgba(0, 0, 0, 0.75)');
 
