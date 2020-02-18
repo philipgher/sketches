@@ -1,24 +1,75 @@
-import React, { useState } from 'react';
-import * as Vibrant from 'node-vibrant';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+
+import React, { useState, useRef, useEffect } from 'react';
+import skmeans from 'skmeans';
+import colorDiff from 'color-diff';
+import reshape from './utils/reshape';
+import createLookupGradient from './utils/createLookupGradient';
+
 import originalSwatchesCK from './assets/swatches-ck';
 import originalSwatchesTH from './assets/swatches-th';
-import reshape from './utils/reshape';
-import useInterval from './utils/useInterval';
-// import CreateGradient from './utils/CreateGradient';
 
-const swatches = originalSwatchesTH.map((swatch, i) => ({ rgb: swatch, i }));
-const gridWidth = Math.ceil(100 / Math.floor(100 / Math.sqrt(swatches.length)));
+const gridSize = 3;
+const amtClusters = gridSize * gridSize * gridSize; // 2*2*2 = 8, 3*3*3 = 27
+const spacing = 255 / (gridSize + 1);
+const initCentroids = [...Array(gridSize)].map((_, x) => [...Array(gridSize)].map((__, y) => [...Array(gridSize)].map((___, z) => [x * spacing + spacing, y * spacing + spacing, z * spacing + spacing]))).flat().flat();
+console.log(initCentroids);
+
+const clusters = skmeans(originalSwatchesTH, amtClusters, initCentroids, 100, (x1, x2) => colorDiff.diff(
+  colorDiff.rgb_to_lab({ R: x1[0], G: x1[1], B: x1[2] }),
+  colorDiff.rgb_to_lab({ R: x2[0], G: x2[1], B: x2[2] }),
+));
+
+console.log(originalSwatchesTH);
+console.log(clusters);
+
+// const swatches = originalSwatchesTH.map((swatch, i) => ({ rgb: swatch, i }));
+// const gridWidth = Math.ceil(100 / Math.floor(100 / Math.sqrt(swatches.length)));
+// const swatchLayout = reshape(originalSwatchesTH, 25);
+
+// let setSpring;
 
 const ColorSorting = () => {
-  const [swatchLayout, setSwatchLayout] = useState();
+  const canvasRef = useRef();
+
+  const [filteredColors, setFilteredColors] = useState([]);
+
+  useEffect(() => {
+    createLookupGradient(originalSwatchesTH, 100, canvasRef.current);
+  }, []);
+
+  const handleClickSwatch = (i) => {
+    const matchedColors = originalSwatchesTH.map((swatch, j) => ({
+      result: clusters.test(swatch, (x1, x2) => colorDiff.diff(
+        colorDiff.rgb_to_lab({ R: x1[0], G: x1[1], B: x1[2] }),
+        colorDiff.rgb_to_lab({ R: x2[0], G: x2[1], B: x2[2] }),
+      )),
+      index: j,
+    })).filter(result => result.result.idx === i);
+
+    console.log(matchedColors);
+    setFilteredColors(matchedColors);
+  };
 
   return (
     <>
-      {swatchLayout ? (
-        swatchLayout.map((swatchRow, i) => (
+      <canvas
+        style={{
+          position: 'absolute',
+          top: '1000px',
+          left: '10px',
+          width: '100px',
+          height: '100px',
+          marginBottom: '100px',
+        }}
+        ref={canvasRef}
+      />
+      <div>
+        {reshape(originalSwatchesTH, 50).map((swatchRow, i) => (
           swatchRow.map((swatch, j) => (
             <div
-              key={`${swatch.rgb}-${swatch.i}`}
+              key={`${i}-${j}`}
               style={{
                 position: 'absolute',
                 transform: `translate(${j * 40 + 10}px, ${i * 40 + 10}px)`,
@@ -26,47 +77,49 @@ const ColorSorting = () => {
                 left: '0',
                 width: '35px',
                 height: '35px',
-                backgroundColor: `rgb(${swatch.rgb[0]}, ${swatch.rgb[1]}, ${swatch.rgb[2]})`,
-                // transition: 'all 10ms ease-in-out',
+                backgroundColor: `rgb(${swatch[0]}, ${swatch[1]}, ${swatch[2]})`,
               }}
             />
           ))
-        ))
-      ) : (<div />)}
-      {/* {reshape(swatches, gridWidth).map((swatchRow, i) => (
-        swatchRow.map((swatch, j) => (
+        ))}
+      </div>
+      <div>
+        {clusters.centroids.map((cluster, i) => (
           <div
-            key={`${swatch.rgb}-${swatch.i}`}
+            key={i}
+            onClick={() => handleClickSwatch(i)}
             style={{
               position: 'absolute',
-              transform: `translate(${j * 40 + 10}px, ${i * 40 + 10}px)`,
-              top: '0px',
-              left: '0px',
-              width: '10px',
-              height: '10px',
-              backgroundColor: `rgba(${swatch.rgb[0]}, ${swatch.rgb[1]}, ${swatch.rgb[2]})`,
+              top: '870px',
+              left: `${i * 40 + 10}px`,
+              width: '35px',
+              height: '35px',
+              backgroundColor: `rgb(${cluster[0]}, ${cluster[1]}, ${cluster[2]})`,
+              marginBottom: '20px',
             }}
           />
-        ))
-      ))} */}
-      {colorsArray && (
-        colorsArray.map((swatchRow, i) => (
-          swatchRow.map((swatch, j) => (
+        ))}
+      </div>
+      <div>
+        {reshape(filteredColors, 20).map((resultRow, i) => (
+          resultRow.map((result, j) => (
             <div
-              key={`${swatch}`}
+              key={`${i}-${j}`}
+              onClick={() => handleClickSwatch(i)}
               style={{
+                border: '0.5px solid white',
                 position: 'absolute',
-                transform: `translate(${j * 40 + 35}px, ${i * 40 + 10}px)`,
-                top: '0px',
-                left: '0px',
-                width: '10px',
-                height: '10px',
-                backgroundColor: `rgba(${swatch[0]}, ${swatch[1]}, ${swatch[2]})`,
+                top: `${(i * 40 + 10) + 920}px`,
+                left: `${j * 40 + 10}px`,
+                width: '35px',
+                height: '35px',
+                backgroundColor: `rgb(${originalSwatchesTH[result.index][0]}, ${originalSwatchesTH[result.index][1]}, ${originalSwatchesTH[result.index][2]})`,
+                marginBottom: '20px',
               }}
             />
           ))
-        ))
-      )}
+        ))}
+      </div>
     </>
   );
 };

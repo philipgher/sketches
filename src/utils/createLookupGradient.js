@@ -1,4 +1,7 @@
+/* eslint-disable no-param-reassign */
+
 import * as Vibrant from 'node-vibrant';
+import colorDiff from 'color-diff';
 
 const colorsForGradientMap = [
   {
@@ -7,46 +10,58 @@ const colorsForGradientMap = [
     name: 'black',
   },
   {
-    color: [255, 255, 255],
+    color: [180, 180, 180],
     counter: 0,
     name: 'white',
   },
   {
-    color: [255, 0, 255],
+    color: [180, 0, 180],
     counter: 0,
     name: 'violet',
   },
   {
-    color: [255, 0, 0],
+    color: [180, 0, 0],
     counter: 0,
     name: 'red',
   },
   {
-    color: [255, 255, 0],
+    color: [180, 180, 0],
     counter: 0,
     name: 'yellow',
   },
   {
-    color: [0, 255, 0],
+    color: [0, 180, 0],
     counter: 0,
     name: 'green',
   },
   {
-    color: [0, 255, 255],
+    color: [0, 180, 180],
     counter: 0,
     name: 'cyan',
   },
   {
-    color: [0, 0, 255],
+    color: [0, 0, 180],
     counter: 0,
     name: 'blue',
   },
 ];
 
-const createLookupGradient = (swatches, size) => {
+const createLookupGradient = (swatches, size, canvas) => {
   swatches.forEach((swatch) => {
     const distances = colorsForGradientMap.map(colorForGradientMap => ({
-      distance: Vibrant.Util.rgbDiff(swatch, colorForGradientMap.color),
+      distance: colorDiff.diff(
+        colorDiff.rgb_to_lab({
+          R: swatch[0],
+          G: swatch[1],
+          B: swatch[2],
+        }),
+        colorDiff.rgb_to_lab({
+          R: colorForGradientMap.color[0],
+          G: colorForGradientMap.color[1],
+          B: colorForGradientMap.color[2],
+        }),
+      ),
+      // distance: Vibrant.Util.rgbDiff(swatch, colorForGradientMap.color),
       name: colorForGradientMap.name,
     }));
 
@@ -139,13 +154,12 @@ const createLookupGradient = (swatches, size) => {
     0,
   );
 
-  const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
 
   const ctx = canvas.getContext('2d');
 
-  const hueGradient = ctx.createLinearGradient(25, 0, 75, size);
+  const hueGradient = ctx.createLinearGradient(0, 0, 0, size);
 
   Object.values(percentages.colors).reduce((acc, color) => {
     hueGradient.addColorStop(
@@ -159,7 +173,7 @@ const createLookupGradient = (swatches, size) => {
   ctx.fillStyle = hueGradient;
   ctx.fillRect(0, 0, size, size);
 
-  const blackWhite = ctx.createLinearGradient(0, 80, size, 20);
+  const blackWhite = ctx.createLinearGradient(0, 0, size, 0);
   blackWhite.addColorStop(0.0, 'rgba(0, 0, 0, 1)');
   blackWhite.addColorStop(percentages.black, 'rgba(0, 0, 0, 0.75)');
 
@@ -185,7 +199,7 @@ const createLookupGradient = (swatches, size) => {
   ctx.fillStyle = blackWhite;
   ctx.fillRect(0, 0, size, size);
 
-  return ctx;
+  // return ctx;
 };
 
 export default createLookupGradient;

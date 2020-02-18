@@ -8,7 +8,7 @@ import MiniLines from './MiniLines';
 import IrregularCircles from './IrregularCircles';
 // import FieldOfSuns from './FieldOfSuns';
 import ColorSorting from './ColorSorting';
-import Products3D from './Products3D';
+// import Products3D from './Products3D';
 
 // const simplex = new SimplexNoise();
 
@@ -21,7 +21,7 @@ import Products3D from './Products3D';
 
 const App = () => {
   const [timer, setTimer] = useState(0);
-  const currentAnimationIndex = useRef(7);
+  const currentAnimationIndex = useRef(6);
 
   const handleKeyDown = (e) => {
     if (e.code === 'Digit1') {
@@ -67,8 +67,8 @@ const App = () => {
     case 6:
       return <ColorSorting />;
 
-    case 7:
-      return <Products3D />;
+      // case 7:
+      //   return <Products3D />;
 
     default:
       return null;
