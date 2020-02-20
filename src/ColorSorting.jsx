@@ -10,7 +10,7 @@ import createLookupGradient from './utils/createLookupGradient';
 import originalSwatchesCK from './assets/swatches-ck';
 import originalSwatchesTH from './assets/swatches-th';
 
-const activeSwatches = originalSwatchesCK;
+const activeSwatches = originalSwatchesTH;
 
 // const gridSize = 3;
 // const amtClusters = gridSize * gridSize * gridSize; // 2*2*2 = 8, 3*3*3 = 27
@@ -63,13 +63,6 @@ const getSimilarClusters = (clusters, threshold) => {
 
   return groupedCentroids;
 };
-
-
-// const swatches = originalSwatchesTH.map((swatch, i) => ({ rgb: swatch, i }));
-// const gridWidth = Math.ceil(100 / Math.floor(100 / Math.sqrt(swatches.length)));
-// const swatchLayout = reshape(originalSwatchesTH, 25);
-
-// let setSpring;
 
 const ColorSorting = () => {
   const canvasRef = useRef();
